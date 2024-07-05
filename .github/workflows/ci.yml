@@ -29,6 +29,16 @@ jobs:
       uses: returntocorp/semgrep-action@v1
       with:
         config: .semgrep.yml
+
+    - name: Generate Semgrep report
+      run: semgrep --config .semgrep.yml --output semgrep_report.json
+
+    - name: Upload Semgrep results
+      uses: actions/upload-artifact@v3
+      with:
+        name: semgrep-results
+        path: semgrep_report.json
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -43,6 +53,17 @@ jobs:
         name: java-app-artifact
         path: ./target
 
+    - name: Download Semgrep results
+      uses: actions/download-artifact@v3
+      with:
+        name: semgrep-results
+        path: ./semgrep_results
+
+    - name: Process Semgrep results
+      run: |
+        cat ./semgrep_results/semgrep_report.json
+        # Add any additional processing here, e.g., uploading to an external system
+
     - name: Configure AWS CLI
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -51,3 +72,4 @@ jobs:
 
     - name: Upload to S3
       run: aws s3 sync target/ s3://my-java-app-bucket/
+
