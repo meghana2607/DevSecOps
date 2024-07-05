@@ -1,55 +1,55 @@
 name: CI
+
 on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '11'
+
     - name: Build with Maven
       run: mvn clean install
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: java-app-artifact
         path: target/*.jar
+
     - name: Run Semgrep
       uses: returntocorp/semgrep-action@v1
       with:
         config: .semgrep.yml
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
     - name: Download build artifacts
       uses: actions/download-artifact@v3
       with:
         name: java-app-artifact
         path: ./target
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
 
-    - name: Install AWS CLI
-      run: |
-        sudo apt-get install -y python3-pip
-        pip3 install awscli
-    - name: Test AWS CLI
+    - name: Configure AWS CLI
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws configure set default.region us-east-1
-        aws s3 ls s3://my-java-app-bucket --region us-east-1
 
     - name: Upload to S3
-      run: aws s3 cp ./target/ s3://my-java-app-bucket/ --recursive --acl public-read
+      run: aws s3 sync target/ s3://my-java-app-bucket/
+
