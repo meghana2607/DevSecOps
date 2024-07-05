@@ -2,6 +2,7 @@ rules:
   - id: no-constant-condition
     pattern: |
       if ($X == true) {
+        ...
       }
     message: "Avoid using constant conditions in if statements."
     languages: [java]
@@ -13,34 +14,38 @@ rules:
     message: "Avoid hardcoding credentials in your source code."
     languages: [java]
     severity: ERROR
-  - id: no-empty-catch
-    patterns:
-      - pattern: |
-          catch ($E) {
-          }
-      - pattern: |
-          catch ($E) {
-            ;
-          }
-    message: "Empty catch block detected"
-    languages: [java]
-    severity: ERROR
 
   - id: no-system-exit
     pattern: |
-      System.exit($ARG);
-    message: "Avoid using System.exit()"
+      System.exit($X);
+    message: "Avoid using System.exit() which can terminate the JVM abruptly."
     languages: [java]
     severity: WARNING
 
-  - id: no-raw-types
+  - id: no-print-stack-trace
     pattern: |
-      List $X = $Y;
-    message: "Avoid using raw types, use generic types instead"
+      $X.printStackTrace();
+    message: "Avoid using printStackTrace(), use a logger instead."
     languages: [java]
     severity: WARNING
 
-  - id: avoid-printstacktrace
+  - id: avoid-public-fields
     pattern: |
-      $EXCEPTION.printStackTrace();
-    message: "Avoid using printStackTrace(), use a logger inst
+      public $TYPE $FIELD;
+    message: "Avoid using public fields; use private fields with getters and setters."
+    languages: [java]
+    severity: WARNING
+
+  - id: prefer-stringbuilder
+    pattern: |
+      $VAR += $EXPR;
+    message: "Use StringBuilder for string concatenation inside loops."
+    languages: [java]
+    severity: INFO
+
+  - id: avoid-bare-returns
+    pattern: |
+      return;
+    message: "Avoid bare return statements; specify a return value if possible."
+    languages: [java]
+    severity: WARNING
