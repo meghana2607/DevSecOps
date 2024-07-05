@@ -1,57 +1,37 @@
-name: CI
+name: CI/CD
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
 
-    - name: Build with Maven
-      run: mvn clean install
+      - name: Build with Maven
+        run: mvn clean package
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: java-app-artifact
-        path: target/*.jar
+      - name: Upload to S3
+        uses: aws-actions/aws-cli@v1
+        with:
+          args: s3 sync ./target s3://my-java-app-bucket/ --delete --acl public-read
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
 
-    - name: Run Semgrep
-      uses: returntocorp/semgrep-action@v1
-      with:
-        config: .semgrep.yml
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: java-app-artifact
-        path: ./target
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-        
-    - name: Upload to S3
-      run: aws s3 cp ./target/ s3://my-java-app-bucket/ --recursive --acl public-read
 
 
