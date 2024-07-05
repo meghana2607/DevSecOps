@@ -1,9 +1,22 @@
 rules:
+  - id: no-constant-condition
+    pattern: |
+      if ($X == true) {
+      }
+    message: "Avoid using constant conditions in if statements."
+    languages: [java]
+    severity: WARNING
+
+  - id: no-hardcoded-credentials
+    pattern: |
+      $X = "password";
+    message: "Avoid hardcoding credentials in your source code."
+    languages: [java]
+    severity: ERROR
   - id: no-empty-catch
     patterns:
       - pattern: |
           catch ($E) {
-            // empty catch block
           }
       - pattern: |
           catch ($E) {
@@ -30,8 +43,4 @@ rules:
   - id: avoid-printstacktrace
     pattern: |
       $EXCEPTION.printStackTrace();
-    message: "Avoid using printStackTrace(), use a logger instead"
-    languages: [java]
-    severity: WARNING
-
-
+    message: "Avoid using printStackTrace(), use a logger inst
