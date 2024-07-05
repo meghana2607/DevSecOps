@@ -1,37 +1,55 @@
 rules:
-  - id: no-constant-condition
-    pattern: |
-      if ($X == true) {
-        ...
-      }
-    message: "Avoid using constant conditions in if statements."
-    languages: [java]
-    severity: WARNING
-
-  - id: no-hardcoded-credentials
-    pattern: |
-      $X = "password";
-    message: "Avoid hardcoding credentials in your source code."
+  - id: java-sql-injection
+    patterns:
+      - pattern-either:
+          - pattern: |
+              Statement stmt = $CONNECTION.createStatement();
+              stmt.executeQuery("SELECT * FROM users WHERE username = '" + $USER + "'");
+          - pattern: |
+              Statement stmt = $CONNECTION.createStatement();
+              stmt.executeUpdate("INSERT INTO users (username) VALUES ('" + $USER + "')");
+    message: "Possible SQL injection vulnerability. Use prepared statements instead."
     languages: [java]
     severity: ERROR
 
-  - id: no-system-exit
-    pattern: |
-      System.exit($X);
-    message: "Avoid using System.exit() which can terminate the JVM abruptly."
+  - id: java-hardcoded-credentials
+    patterns:
+      - pattern-either:
+          - pattern: $X = "password"
+          - pattern: $X = "secret"
+          - pattern: $X = "key"
+    message: "Avoid hardcoded credentials in code."
     languages: [java]
-    severity: WARNING
-  - id: no-raw-types
+    severity: ERROR
+
+  - id: java-debug-logging
     pattern: |
-      List $X = $Y;
-    message: "Avoid using raw types, use generic types instead"
+      System.out.println("DEBUG: " + $MSG);
+    message: "Remove debug logging before deploying to production."
     languages: [java]
     severity: WARNING
 
-  - id: avoid-printstacktrace
+  - id: java-unused-import
     pattern: |
-      $EXCEPTION.printStackTrace();
-    message: "Avoid using printStackTrace(), use a logger instead"
+      import $PACKAGE;
+      ...
+      // No usage of $PACKAGE in the file
+    message: "Remove unused import statements."
+    languages: [java]
+    severity: INFO
+
+  - id: java-empty-catch-block
+    pattern: |
+      catch ($EXCEPTION e) {
+        // Empty catch block
+      }
+    message: "Avoid empty catch blocks. Add logging or handle the exception appropriately."
     languages: [java]
     severity: WARNING
 
+  - id: java-public-field
+    pattern: |
+      public $TYPE $VARIABLE;
+    message: "Avoid public fields. Use private fields with getters and setters instead."
+    languages: [java]
+    severity: INFO
