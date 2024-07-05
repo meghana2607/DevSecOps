@@ -29,14 +29,6 @@ jobs:
       uses: returntocorp/semgrep-action@v1
       with:
         config: .semgrep.yml
-
-    # Post-scan step: Example of sending scan results to an external service (e.g., Slack)
-    - name: Post Scan Results
-      if: always()  # Ensure this step runs even if previous steps fail
-      run: |
-        # Example: Send scan results to a Slack channel
-        curl -X POST -H 'Content-type: application/json' --data '{"text":"Semgrep scan completed successfully."}' $SLACK_WEBHOOK_URL
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
