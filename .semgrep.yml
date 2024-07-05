@@ -1,51 +1,34 @@
 rules:
-  - id: no-constant-condition
-    pattern: |
-      if ($X == true) {
-        ...
-      }
-    message: "Avoid using constant conditions in if statements."
-    languages: [java]
-    severity: WARNING
-
-  - id: no-hardcoded-credentials
-    pattern: |
-      $X = "password";
-    message: "Avoid hardcoding credentials in your source code."
+  - id: no-empty-catch
+    patterns:
+      - pattern: |
+          catch ($E) {
+          }
+      - pattern: |
+          catch ($E) {
+            ;
+          }
+    message: "Empty catch block detected. Consider logging the exception or taking appropriate action."
     languages: [java]
     severity: ERROR
 
   - id: no-system-exit
     pattern: |
-      System.exit($X);
-    message: "Avoid using System.exit() which can terminate the JVM abruptly."
+      System.exit($ARG);
+    message: "Avoid using System.exit(). Consider using a different approach to terminate the program."
     languages: [java]
     severity: WARNING
 
-  - id: no-print-stack-trace
+  - id: no-raw-types
     pattern: |
-      $X.printStackTrace();
-    message: "Avoid using printStackTrace(), use a logger instead."
+      List $X = $Y;
+    message: "Avoid using raw types. Use generic types instead (e.g., List<String> instead of List)."
     languages: [java]
     severity: WARNING
 
-  - id: avoid-public-fields
+  - id: avoid-printstacktrace
     pattern: |
-      public $TYPE $FIELD;
-    message: "Avoid using public fields; use private fields with getters and setters."
-    languages: [java]
-    severity: WARNING
-
-  - id: prefer-stringbuilder
-    pattern: |
-      $VAR += $EXPR;
-    message: "Use StringBuilder for string concatenation inside loops."
-    languages: [java]
-    severity: INFO
-
-  - id: avoid-bare-returns
-    pattern: |
-      return;
-    message: "Avoid bare return statements; specify a return value if possible."
+      $EXCEPTION.printStackTrace();
+    message: "Avoid using printStackTrace(). Use a logger to log exceptions."
     languages: [java]
     severity: WARNING
