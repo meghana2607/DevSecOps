@@ -1,17 +1,12 @@
 rules:
-  - id: no-empty-catch
-    patterns:
-      - pattern: |
-          catch ($E) {
-          }
-      - pattern: |
-          catch ($E) {
-            ;
-          }
-    message: "Empty catch block detected. Consider logging the exception or taking appropriate action."
+   - id: no-empty-catch
+    pattern: |
+      catch ($E) {
+        ;
+      }
+    message: "Empty catch block detected"
     languages: [java]
     severity: ERROR
-
   - id: no-system-exit
     pattern: |
       System.exit($ARG);
