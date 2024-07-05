@@ -1,29 +1,37 @@
 rules:
-   - id: no-empty-catch
+  - id: no-constant-condition
     pattern: |
-      catch ($E) {
-        ;
+      if ($X == true) {
+        ...
       }
-    message: "Empty catch block detected"
-    languages: [java]
-    severity: ERROR
-  - id: no-system-exit
-    pattern: |
-      System.exit($ARG);
-    message: "Avoid using System.exit(). Consider using a different approach to terminate the program."
+    message: "Avoid using constant conditions in if statements."
     languages: [java]
     severity: WARNING
 
+  - id: no-hardcoded-credentials
+    pattern: |
+      $X = "password";
+    message: "Avoid hardcoding credentials in your source code."
+    languages: [java]
+    severity: ERROR
+
+  - id: no-system-exit
+    pattern: |
+      System.exit($X);
+    message: "Avoid using System.exit() which can terminate the JVM abruptly."
+    languages: [java]
+    severity: WARNING
   - id: no-raw-types
     pattern: |
       List $X = $Y;
-    message: "Avoid using raw types. Use generic types instead (e.g., List<String> instead of List)."
+    message: "Avoid using raw types, use generic types instead"
     languages: [java]
     severity: WARNING
 
   - id: avoid-printstacktrace
     pattern: |
       $EXCEPTION.printStackTrace();
-    message: "Avoid using printStackTrace(). Use a logger to log exceptions."
+    message: "Avoid using printStackTrace(), use a logger instead"
     languages: [java]
     severity: WARNING
+
