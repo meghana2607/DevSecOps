@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on: [push, pull_request]
 
@@ -30,6 +30,13 @@ jobs:
       with:
         config: .semgrep.yml
 
+    # Post-scan step: Example of sending scan results to an external service (e.g., Slack)
+    - name: Post Scan Results
+      if: always()  # Ensure this step runs even if previous steps fail
+      run: |
+        # Example: Send scan results to a Slack channel
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"Semgrep scan completed successfully."}' $SLACK_WEBHOOK_URL
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -52,4 +59,3 @@ jobs:
 
     - name: Upload to S3
       run: aws s3 sync target/ s3://my-java-app-bucket/
-
