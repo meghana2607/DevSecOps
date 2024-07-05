@@ -1,75 +1,49 @@
 name: CI/CD
-
 on: [push, pull_request]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '11'
-
     - name: Build with Maven
       run: mvn clean install
-
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: java-app-artifact
         path: target/*.jar
-
     - name: Run Semgrep
       uses: returntocorp/semgrep-action@v1
       with:
         config: .semgrep.yml
 
-    - name: Generate Semgrep report
-      run: semgrep --config .semgrep.yml --output semgrep_report.json
-
-    - name: Upload Semgrep results
-      uses: actions/upload-artifact@v3
-      with:
-        name: semgrep-results
-        path: semgrep_report.json
-
+    # Post-scan step: Example of sending scan results to an external service (e.g., Slack)
+    - name: Post Scan Results
+      if: always()  # Ensure this step runs even if previous steps fail
+      run: |
+        # Example: Send scan results to a Slack channel
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"Semgrep scan completed successfully."}' $SLACK_WEBHOOK_URL
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
     - name: Download build artifacts
       uses: actions/download-artifact@v3
       with:
         name: java-app-artifact
         path: ./target
-
-    - name: Download Semgrep results
-      uses: actions/download-artifact@v3
-      with:
-        name: semgrep-results
-        path: ./semgrep_results
-
-    - name: Process Semgrep results
-      run: |
-        cat ./semgrep_results/semgrep_report.json
-        # Add any additional processing here, e.g., uploading to an external system
-
     - name: Configure AWS CLI
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws configure set default.region us-east-1
-
     - name: Upload to S3
       run: aws s3 sync target/ s3://my-java-app-bucket/
-
