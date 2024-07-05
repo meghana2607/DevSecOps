@@ -1,7 +1,7 @@
 rules:
   - id: no-constant-condition
     pattern: |
-      if ($X == true) {
+      if (true) {
         ...
       }
     message: "Avoid using constant conditions in if statements."
@@ -10,7 +10,7 @@ rules:
 
   - id: no-hardcoded-credentials
     pattern: |
-      $X = "password";
+      String password = "password";
     message: "Avoid hardcoding credentials in your source code."
     languages: [java]
     severity: ERROR
@@ -32,10 +32,7 @@ rules:
   - id: no-empty-catch
     patterns:
       - pattern: |
-          catch ($E $e) {
-          }
-      - pattern: |
-          catch ($E $e) {
+          catch ($E) {
             // empty catch block
           }
     message: "Empty catch blocks can hide exceptions and make debugging difficult."
@@ -62,3 +59,4 @@ rules:
     message: "Avoid bare return statements; specify a return value if possible."
     languages: [java]
     severity: WARNING
+
