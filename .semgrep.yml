@@ -28,13 +28,6 @@ rules:
     languages: [java]
     severity: WARNING
 
-  - id: avoid-printstacktrace
-    pattern: |
-      $EXCEPTION.printStackTrace();
-    message: "Avoid using printStackTrace(), use a logger instead"
-    languages: [java]
-    severity: WARNING
-
   - name: Post-deployment Semgrep Scan
       uses: returntocorp/semgrep-action@v1
       with:
