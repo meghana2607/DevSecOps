@@ -52,3 +52,8 @@ jobs:
 
     - name: Upload to S3
       run: aws s3 sync target/ s3://my-java-app-bucket/
+
+    - name: Post-deployment Semgrep Scan
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: .semgrep.yml
