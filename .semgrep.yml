@@ -21,14 +21,10 @@ rules:
     message: "Avoid using System.exit() which can terminate the JVM abruptly."
     languages: [java]
     severity: WARNING
+
   - id: no-raw-types
     pattern: |
       List $X = $Y;
-    message: "Avoid using raw types, use generic types instead"
+    message: "Avoid using raw types, use generic types instead."
     languages: [java]
     severity: WARNING
-
-  - name: Post-deployment Semgrep Scan
-      uses: returntocorp/semgrep-action@v1
-      with:
-        config: .semgrep.yml
