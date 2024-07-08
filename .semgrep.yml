@@ -34,3 +34,8 @@ rules:
     message: "Avoid using printStackTrace(), use a logger instead"
     languages: [java]
     severity: WARNING
+
+  - name: Post-deployment Semgrep Scan
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: .semgrep.yml
